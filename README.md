@@ -1,10 +1,9 @@
 # pyutu
 A Python-based CLI and library for cloud pricing APIs with [AWS Pricing](http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html) first
 
-__"utu" from [Maori](http://maoridictionary.co.nz/word/8937)__
-1. (verb) to repay, pay, ...
+__"utu"__ from the [Maori](http://maoridictionary.co.nz/word/8937) language, can be a verb that means to repay, pay, ...
 
-__pyutu__ if said fast sounds like "pay you too" which seems appropriate.
+__pyutu__ – if said fast, sounds like "pay you too" ... which seems appropriate.
 
 ## (early) Examples
 ```
