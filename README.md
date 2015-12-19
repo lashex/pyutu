@@ -64,7 +64,6 @@ Service Alias: AmazonDynamoDB
 ```
 ```
 $ pyutu --region=us-west-1 price s3
-..just outputting for now...
 Service Alias: AmazonS3
           URL: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/index.json
        Region: us-west-1
