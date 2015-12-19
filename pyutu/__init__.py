@@ -12,7 +12,7 @@ from cachecontrol.caches import FileCache
 __version__ = open(os.path.join(os.path.dirname(__file__), '_version')).read()
 
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout,
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
                     datefmt="%Y-%m-%dT%H:%M:%S%z")
 logger = logging.getLogger(__name__)
