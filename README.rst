@@ -128,6 +128,6 @@ Initially, this library just strives to simplify pulling product details and pri
 TODOs
 =====
 - [ ] Add more product filtering criteria: OnDemand or Reserved
-- [ ] Given a service and a partial or full SKU, get prices
+- [X] Given a service and a full SKU, get prices
 - [ ] Add ability to find products by arbitrary attributes: EC2 'storage', 'memory', etc.
 - [ ] Add ability to find specific product families' prices
