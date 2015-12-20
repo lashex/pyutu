@@ -9,8 +9,7 @@ pyutu
 .. image:: https://secure.travis-ci.org/lashex/pyutu.png?branch=master
    :target: http://travis-ci.org/lashex/pyutu
 
-A Python-based CLI and library for cloud pricing APIs. Currently covering AWS_ Pricing .
-.. _AWS: http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html
+A Python-based CLI and library for cloud pricing APIs. Currently covering `AWS Pricing <http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html>`_.
 
   **utu** from the Maori_ language, can be a verb that means to repay, pay, ...
 .. _Maori: http://maoridictionary.co.nz/word/8937
