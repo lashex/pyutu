@@ -12,7 +12,7 @@ from cachecontrol.caches import FileCache
 __version__ = open(os.path.join(os.path.dirname(__file__), '_version')).read()
 
 
-logging.basicConfig(level=logging.INFO, stream=sys.stdout,
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
                     datefmt="%Y-%m-%dT%H:%M:%S%z")
 logger = logging.getLogger(__name__)
@@ -30,7 +30,6 @@ regions = {
     'us-west-1': "US West (N. California)",
     'us-west-2': "US West (Oregon)"
 }
-
 
 svcs = {
     "ec2": {
@@ -79,6 +78,18 @@ svcs = {
 # }
 
 
+class PricingContext(object):
+
+    def __init__(self, region, root="https://pricing.us-east-1.amazonaws.com"):
+        self.sku = None
+        self.aws_root = root
+        self.region = region
+        self.aws_index = self.aws_root + "/offers/v1.0/aws/index.json"
+        self.idx = req.get(self.aws_index).json()
+        self.sku = None
+        self.terms = "OnDemand"  # either 'OnDemand' or 'Reserved'
+
+
 def check_service(svc):
     if svc not in svcs:
         raise ValueError('Invalid service: {0}'.format(svc))
@@ -86,53 +97,59 @@ def check_service(svc):
     return True
 
 
-def find_price(svc, region, offer_file, terms='OnDemand'):
+def get_details(pc):
+    logger.info("  Format Version: {0}".format(pc.idx['formatVersion']))
+    logger.info("Publication Date: {0}".format(pc.idx['publicationDate']))
+    olist = ''
+    for i,o in enumerate(pc.idx['offers']):
+        if i < len(pc.idx['offers']) - 1:
+            olist += o + ", "
+        else:
+            olist += o
+
+    logger.info("          Offers: {0}".format(olist))
+
+
+def get_prices(pc, svc):
     check_service(svc=svc)
+
+    service_alias = svcs[svc]['offer_code']
+    logger.info("Service Alias: {0}".format(service_alias))
+    url = pc.aws_root + \
+          pc.idx['offers'][service_alias]['currentVersionUrl']
+    logger.info("          URL: {0}".format(url))
+    logger.info("       Region: {0}".format(pc.region))
+
+    offer_file = req.get(url).json()
+
+    logger.debug('Getting specific product SKU: {0}'.format(pc.sku))
+
     products = {}
-    for p in offer_file['products']:
-        product = offer_file['products'][p]
-        prod_fam = product['productFamily']
-        if prod_fam in svcs[svc]['prod_families']:
-            f2r = svcs[svc]['prod_families'][prod_fam]
-            attr_val = product['attributes'][f2r]
-            if attr_val == regions[region]:
-                sku = product['sku']
-                logger.debug('Found product SKU: {0} in region: {1}'.format(
-                    sku, region
-                ))
-                products[sku] = {
-                    'offerCode' : offer_file['offerCode'],
-                    'product': product,
-                    'term': offer_file['terms'][terms][sku]
-                }
+    if pc.sku is None:
+        for p in offer_file['products']:
+            product = offer_file['products'][p]
+            prod_fam = product['productFamily']
+            if prod_fam in svcs[svc]['prod_families']:
+                f2r = svcs[svc]['prod_families'][prod_fam]
+                attr_val = product['attributes'][f2r]
+                if attr_val == regions[pc.region]:
+                    sku = product['sku']
+                    logger.debug('Found product SKU: {0} in region: {1}'.format(
+                        sku, pc.region
+                    ))
+                    products[sku] = {
+                        'offerCode' : offer_file['offerCode'],
+                        'product': product,
+                        'term': offer_file['terms'][pc.terms][sku]
+                    }
+    else:
+        products[pc.sku] = {
+            'offerCode' : offer_file['offerCode'],
+            'product': offer_file['products'][pc.sku],
+            'term': offer_file['terms'][pc.terms][pc.sku]
+        }
 
+    logger.info("       Products:{0}".format(json.dumps(
+        products, indent=2, sort_keys=True))
+    )
     return products
-
-
-class PricingContext(object):
-
-    def __init__(self, region, root="https://pricing.us-east-1.amazonaws.com"):
-        self.aws_root = root
-        self.region = region
-        self.aws_index = self.aws_root + "/offers/v1.0/aws/index.json"
-        self._aws_prepend = 'Amazon'
-        self.idx = req.get(self.aws_index).json()
-
-    def get_details(self):
-        logger.info("Publication Date: {0}".format(self.idx['publicationDate']))
-        logger.info("Format Version: {0}".format(self.idx['formatVersion']))
-
-    def get_prices(self, svc, terms='OnDemand'):
-        check_service(svc=svc)
-        service_alias = svcs[svc]['offer_code']
-        logger.info("Service Alias: {0}".format(service_alias))
-        url = self.aws_root + \
-              self.idx['offers'][service_alias]['currentVersionUrl']
-
-        logger.info("          URL: {0}".format(url))
-        logger.info("       Region: {0}".format(self.region))
-        offer_file = req.get(url).json()
-        prices = find_price(svc, self.region, offer_file)
-        logger.info("       Prices:{0}".format(json.dumps(
-            prices, indent=2, sort_keys=True))
-        )
