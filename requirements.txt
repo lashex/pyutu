@@ -1,2 +1,4 @@
+CacheControl==0.11.5
 click==6.2
+lockfile==0.12.2
 requests==2.8.1
