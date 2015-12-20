@@ -11,7 +11,7 @@ pyutu
 
 A Python-based CLI and library for cloud pricing APIs. Currently covering `AWS Pricing <http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html>`_.
 
-  **utu** from the Maori_ language, can be a verb that means to repay, pay, ...
+  **utu** – from the Maori_ language, can be a verb that means to repay, pay, ...
 .. _Maori: http://maoridictionary.co.nz/word/8937
 
   **pyutu** – if said fast, sounds like "pay you too" ... which seems appropriate.
