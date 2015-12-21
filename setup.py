@@ -15,7 +15,7 @@ setup(
     author='Brett Francis',
     author_email='brett_francis@me.com',
     description='Python library for interaction with the AWS Pricing API',
-    long_description=__doc__,
+    long_description=open("README.rst").read(),
     py_modules=['pyutu'],
     zip_safe=False,
     include_package_data=True,
