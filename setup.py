@@ -21,7 +21,7 @@ setup(
     include_package_data=True,
     package_dir={'pyutu': 'pyutu'},
     install_requires=[
-        'click'
+        'click', 'CacheControl', 'requests'
     ],
     entry_points='''
         [console_scripts]
