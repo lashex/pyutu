@@ -29,6 +29,7 @@ Initially, this library just strives to simplify pulling product details and pri
   ...snip...
 
 A CLI example showing how to get EC2 Linux on-demand prices in the default region for the `m4.large` instance type.
+
 .. code-block:: javascript
 
   $> pyutu price ec2 -a operatingSystem Linux -a instanceType m4.large
@@ -43,6 +44,7 @@ A CLI example showing how to get EC2 Linux on-demand prices in the default regio
   Total Prices Found: 3
 
 A CLI example showing how to get EC2 Linux product details in the default region for the shared tenancy `m4.large` instance type
+
 .. code-block:: javascript
 
   $> pyutu product ec2 -a operatingSystem Linux -a instanceType m4.large -a tenancy Shared
@@ -110,6 +112,7 @@ A CLI example showing how to get EC2 Linux product details in the default region
 
 
 A CLI exmpale showing how to get all on-demand DDB prices in the default region.
+
 .. code-block:: javascript
 
   $> pyutu price ddb
@@ -137,5 +140,4 @@ A CLI exmpale showing how to get all on-demand DDB prices in the default region.
 
 
 
-- [ ] Add ability to find products by arbitrary attributes: EC2 'storage', 'memory', etc.
 - [ ] Add ability to find specific product families' prices
