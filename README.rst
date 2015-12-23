@@ -20,7 +20,8 @@ Initially, this library just strives to simplify pulling product details and pri
 
 (early) CLI Examples
 ~~~~~~~~~~~~~~~~~~~~
-.. code-block:: javascript
+A CLI example that shows the pricing index file.
+.. code-block:: bash
 
   $> pyutu index
   Publication Date: 2015-12-09T23:40:29Z
@@ -111,7 +112,7 @@ A CLI example showing how to get EC2 Linux product details in the default region
   Time: 5.734775 secs
 
 
-A CLI exmpale showing how to get all on-demand DDB prices in the default region.
+A CLI example showing how to get all on-demand DDB prices in the default region.
 
 .. code-block:: javascript
 
