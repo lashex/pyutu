@@ -32,7 +32,7 @@ A CLI example that shows the pricing index file.
 
 A CLI example showing how to get EC2 Linux on-demand prices in the default region for the `m4.large` instance type.
 
-.. code-block:: javascript
+.. code-block:: bash
 
   $> pyutu price ec2 -a operatingSystem Linux -a instanceType m4.large
   Service Alias: AmazonEC2
@@ -40,14 +40,52 @@ A CLI example showing how to get EC2 Linux on-demand prices in the default regio
   Region: us-west-2
   Product Terms: OnDemand
   Filtering Attributes: {'instanceType': 'm4.large', 'operatingSystem': 'Linux'}
-  Price: {'effectiveDate': '2015-12-01T00:00:00Z', 'unit': 'Hrs', 'beginRange': '0', 'sku': 'B2M25Y2U9824Q5TG', 'regionId': 'us-west-2', 'pricePerUnit': {'USD': '0.1260000000'}, 'description': '$0.126 per On Demand Linux m4.large Instance Hour', 'endRange': 'Inf', 'term_description': 'OnDemand'}
-  Price: {'effectiveDate': '2015-12-01T00:00:00Z', 'unit': 'Hrs', 'beginRange': '0', 'sku': '8ZSNJR8WJ5729VXM', 'regionId': 'us-west-2', 'pricePerUnit': {'USD': '0.1390000000'}, 'description': '$0.139 per Dedicated Usage Linux m4.large Instance Hour', 'endRange': 'Inf', 'term_description': 'OnDemand'}
-  Price: {'effectiveDate': '2015-12-01T00:00:00Z', 'unit': 'Hrs', 'beginRange': '0', 'sku': '62WK2ZX9BN3SYAXW', 'regionId': 'us-west-2', 'pricePerUnit': {'USD': '0.0000000000'}, 'description': '$0.000 per Linux m4.large Dedicated Host Instance hour', 'endRange': 'Inf', 'term_description': 'OnDemand'}
+  Rate Code: 8ZSNJR8WJ5729VXM.JRTCKXETXF.6YS6EN2CT7 price: {
+    "beginRange": "0",
+    "description": "$0.139 per Dedicated Usage Linux m4.large Instance Hour",
+    "effectiveDate": "2015-12-01T00:00:00Z",
+    "endRange": "Inf",
+    "pricePerUnit": {
+      "USD": "0.1390000000"
+    },
+    "regionId": "us-west-2",
+    "sku": "8ZSNJR8WJ5729VXM",
+    "term_description": "OnDemand",
+    "unit": "Hrs"
+  }
+  Rate Code: B2M25Y2U9824Q5TG.JRTCKXETXF.6YS6EN2CT7 price: {
+    "beginRange": "0",
+    "description": "$0.126 per On Demand Linux m4.large Instance Hour",
+    "effectiveDate": "2015-12-01T00:00:00Z",
+    "endRange": "Inf",
+    "pricePerUnit": {
+      "USD": "0.1260000000"
+    },
+    "regionId": "us-west-2",
+    "sku": "B2M25Y2U9824Q5TG",
+    "term_description": "OnDemand",
+    "unit": "Hrs"
+  }
+  Rate Code: 62WK2ZX9BN3SYAXW.JRTCKXETXF.6YS6EN2CT7 price: {
+    "beginRange": "0",
+    "description": "$0.000 per Linux m4.large Dedicated Host Instance hour",
+    "effectiveDate": "2015-12-01T00:00:00Z",
+    "endRange": "Inf",
+    "pricePerUnit": {
+      "USD": "0.0000000000"
+    },
+    "regionId": "us-west-2",
+    "sku": "62WK2ZX9BN3SYAXW",
+    "term_description": "OnDemand",
+    "unit": "Hrs"
+  }
   Total Prices Found: 3
+  Time: 5.768927000000001 secs
+
 
 A CLI example showing how to get EC2 Linux product details in the default region for the shared tenancy `m4.large` instance type
 
-.. code-block:: javascript
+.. code-block:: bash
 
   $> pyutu product ec2 -a operatingSystem Linux -a instanceType m4.large -a tenancy Shared
   Service Alias: AmazonEC2
@@ -115,7 +153,7 @@ A CLI example showing how to get EC2 Linux product details in the default region
 
 A CLI example showing how to get all on-demand DDB prices in the default region.
 
-.. code-block:: javascript
+.. code-block:: bash
 
   $> pyutu price ddb
   Service Alias: AmazonDynamoDB
