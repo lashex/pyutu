@@ -12,7 +12,7 @@ from cachecontrol.caches import FileCache
 __version__ = open(os.path.join(os.path.dirname(__file__), '_version')).read()
 
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout,
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
                     datefmt="%Y-%m-%dT%H:%M:%S%z")
 logger = logging.getLogger(__name__)
@@ -80,14 +80,39 @@ svcs = {
 
 class PricingContext(object):
 
-    def __init__(self, region, root="https://pricing.us-east-1.amazonaws.com"):
+    def __init__(self, region, service, root="https://pricing.us-east-1.amazonaws.com"):
         self.sku = None
         self.aws_root = root
         self.region = region
         self.aws_index = self.aws_root + "/offers/v1.0/aws/index.json"
         self.idx = req.get(self.aws_index).json()
         self.sku = None
-        self.terms = "OnDemand"  # either 'OnDemand' or 'Reserved'
+        self.service = service
+        self._terms = None
+        self.attributes =
+
+    @property
+    def terms(self):
+        if self._terms is None:
+            self._terms = "OnDemand"
+        return self._terms
+
+    @terms.setter
+    def terms(self, value):
+        # maps any input value regardless of case to the AWS product term
+        term_map = {'ondemand': "OnDemand", "reserved": "Reserved"}
+        t = value.lower()
+        self._terms = term_map[t]
+
+    def add_attribute(self, values):
+        if values is None:
+            return
+
+        if values is dict:
+
+
+def set_debug():
+    logger.setLevel(level=logging.DEBUG)
 
 
 def check_service(svc):
@@ -110,15 +135,16 @@ def get_details(pc):
     logger.info("          Offers: {0}".format(olist))
 
 
-def get_prices(pc, svc):
-    check_service(svc=svc)
+def get_prices(pc):
+    check_service(svc=pc.service)
 
-    service_alias = svcs[svc]['offer_code']
+    service_alias = svcs[pc.service]['offer_code']
     logger.info("Service Alias: {0}".format(service_alias))
     url = pc.aws_root + \
-          pc.idx['offers'][service_alias]['currentVersionUrl']
+        pc.idx['offers'][service_alias]['currentVersionUrl']
     logger.info("          URL: {0}".format(url))
     logger.info("       Region: {0}".format(pc.region))
+    logger.info("Product Terms: {0}".format(pc.terms))
 
     offer_file = req.get(url).json()
 
@@ -137,14 +163,13 @@ def get_prices(pc, svc):
                     logger.debug('Found product SKU: {0} in region: {1}'.format(
                         sku, pc.region
                     ))
-                    products[sku] = {
-                        'offerCode' : offer_file['offerCode'],
-                        'product': product,
-                        'term': offer_file['terms'][pc.terms][sku]
-                    }
+                    match = _check_terms_attribs(pc, offer_file, product, sku)
+                    logger.debug('Match is: {0}'.format(match))
+                    if match:
+                        products[sku] = match
     else:
         products[pc.sku] = {
-            'offerCode' : offer_file['offerCode'],
+            'offerCode': offer_file['offerCode'],
             'product': offer_file['products'][pc.sku],
             'term': offer_file['terms'][pc.terms][pc.sku]
         }
@@ -153,3 +178,37 @@ def get_prices(pc, svc):
         products, indent=2, sort_keys=True))
     )
     return products
+
+
+def _check_terms_attribs(pc, offer_file, product, sku):
+    logger.debug('Checking product terms: {0}'.format(pc.terms))
+    try:
+        terms = offer_file['terms'][pc.terms][sku]
+        # checking attributes
+        logger.debug('Checking product attributes: {0}'.format(
+            pc.attributes
+        ))
+        if pc.attributes is None:
+            return {
+                    'offerCode': offer_file['offerCode'],
+                    'product': product,
+                    'term': terms
+                }
+
+        in_attribs = set(pc.attributes.items())
+        attrib_items = set(product['attributes'].items())
+        print("In: {0} Comp: {1}".format(in_attribs, attrib_items))
+        print("Intersection: {0}".format(in_attribs <= attrib_items))
+        if set(pc.attributes.items()) <= set(product['attributes'].items()):
+            # any intersection means at least one matching Key and Value
+            logger.debug('Attrib intersection found')
+            return {
+                'offerCode': offer_file['offerCode'],
+                'product': product,
+                'term': terms
+            }
+    except KeyError:
+        logger.debug("SKU {0} filtered vs. Terms: {1}".format(
+            sku, pc.terms))
+
+    return None
