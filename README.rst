@@ -21,6 +21,7 @@ Initially, this library just strives to simplify pulling product details and pri
 (early) CLI Examples
 ~~~~~~~~~~~~~~~~~~~~
 A CLI example that shows the pricing index file.
+
 .. code-block:: bash
 
   $> pyutu index
