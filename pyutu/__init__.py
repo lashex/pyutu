@@ -12,7 +12,7 @@ from cachecontrol.caches import FileCache
 __version__ = open(os.path.join(os.path.dirname(__file__), '_version')).read()
 
 
-logging.basicConfig(level=logging.INFO, stream=sys.stdout,
+logging.basicConfig(stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
                     datefmt="%Y-%m-%dT%H:%M:%S%z")
 logger = logging.getLogger(__name__)
@@ -80,16 +80,18 @@ svcs = {
 
 class PricingContext(object):
 
-    def __init__(self, region, service, root="https://pricing.us-east-1.amazonaws.com"):
+    def __init__(self, region):
         self.sku = None
-        self.aws_root = root
+        self.aws_root = "https://pricing.us-east-1.amazonaws.com"
         self.region = region
         self.aws_index = self.aws_root + "/offers/v1.0/aws/index.json"
         self.idx = req.get(self.aws_index).json()
         self.sku = None
-        self.service = service
+        self.service = ''
+        self._service_alias = None
+        self._service_url = None
         self._terms = None
-        self.attributes =
+        self.attributes = {}
 
     @property
     def terms(self):
@@ -104,26 +106,42 @@ class PricingContext(object):
         t = value.lower()
         self._terms = term_map[t]
 
-    def add_attribute(self, values):
-        if values is None:
-            return
+    @property
+    def service_alias(self):
+        if self.service == '':
+            raise AttributeError('Must set PricingContext.service before'
+                                 ' an alias can be determined.')
+        if self._service_alias is None:
+            self._service_alias = svcs[self.service]['offer_code']
 
-        if values is dict:
+        return self._service_alias
+
+    def add_attributes(self, attribs):
+        logger.debug("Adding attribs: {0}".format(attribs))
+        self.attributes.update(attribs)
+
+    @property
+    def service_url(self):
+        if self._service_url is None:
+            self._service_url = self.aws_root + \
+                  self.idx['offers'][self.service_alias]['currentVersionUrl']
+        return self._service_url
 
 
-def set_debug():
-    logger.setLevel(level=logging.DEBUG)
+def set_log_level(level=None):
+    if level:
+        logger.setLevel(level=level.upper())
 
 
-def check_service(svc):
-    if svc not in svcs:
-        raise ValueError('Invalid service: {0}'.format(svc))
+def check_service(service):
+    if service not in svcs:
+        raise ValueError('Invalid service: {0}'.format(service))
 
     return True
 
 
 def get_details(pc):
-    logger.info("  Format Version: {0}".format(pc.idx['formatVersion']))
+    logger.info("Format Version: {0}".format(pc.idx['formatVersion']))
     logger.info("Publication Date: {0}".format(pc.idx['publicationDate']))
     olist = ''
     for i,o in enumerate(pc.idx['offers']):
@@ -132,55 +150,98 @@ def get_details(pc):
         else:
             olist += o
 
-    logger.info("          Offers: {0}".format(olist))
+    logger.info("Offers: {0}".format(olist))
 
 
-def get_prices(pc):
-    check_service(svc=pc.service)
+def find_products(pc):
+    check_service(service=pc.service)
 
-    service_alias = svcs[pc.service]['offer_code']
-    logger.info("Service Alias: {0}".format(service_alias))
-    url = pc.aws_root + \
-        pc.idx['offers'][service_alias]['currentVersionUrl']
-    logger.info("          URL: {0}".format(url))
-    logger.info("       Region: {0}".format(pc.region))
+    logger.info("Service Alias: {0}".format(pc.service_alias))
+    logger.info("URL: {0}".format(pc.service_url))
+    logger.info("Region: {0}".format(pc.region))
     logger.info("Product Terms: {0}".format(pc.terms))
 
-    offer_file = req.get(url).json()
-
-    logger.debug('Getting specific product SKU: {0}'.format(pc.sku))
+    offer_file = req.get(pc.service_url).json()
 
     products = {}
     if pc.sku is None:
+        # find service's product in a region that matches
+        # the terms and attributes
         for p in offer_file['products']:
             product = offer_file['products'][p]
             prod_fam = product['productFamily']
-            if prod_fam in svcs[svc]['prod_families']:
-                f2r = svcs[svc]['prod_families'][prod_fam]
+            if prod_fam in svcs[pc.service]['prod_families']:
+                # Cannot simply use 'region' as an attribute because we need to
+                # pick the right regional 'from attribute' by product family
+                # AND service
+                f2r = svcs[pc.service]['prod_families'][prod_fam]
                 attr_val = product['attributes'][f2r]
                 if attr_val == regions[pc.region]:
                     sku = product['sku']
                     logger.debug('Found product SKU: {0} in region: {1}'.format(
                         sku, pc.region
                     ))
-                    match = _check_terms_attribs(pc, offer_file, product, sku)
-                    logger.debug('Match is: {0}'.format(match))
+                    match = _match_terms_attribs(pc, offer_file, product, sku)
                     if match:
+                        logger.debug('Product matched attributes: {0}'.format(
+                            pc.attributes))
                         products[sku] = match
     else:
-        products[pc.sku] = {
-            'offerCode': offer_file['offerCode'],
-            'product': offer_file['products'][pc.sku],
-            'term': offer_file['terms'][pc.terms][pc.sku]
-        }
+        # just try to get the given SKU
+        logger.debug('Getting specific product SKU: {0}'.format(pc.sku))
+        products[pc.sku] = get_sku(pc)
 
-    logger.info("       Products:{0}".format(json.dumps(
-        products, indent=2, sort_keys=True))
-    )
+    if logging.INFO == logger.getEffectiveLevel():
+        logger.info("Products: \n{0}".format(json.dumps(
+            products, indent=2, sort_keys=True))
+        )
     return products
 
 
-def _check_terms_attribs(pc, offer_file, product, sku):
+def get_sku(pc):
+    offer_file = req.get(pc.service_url).json()
+
+    return {
+        'regionId': pc.region,
+        'offerCode': offer_file['offerCode'],
+        'product': offer_file['products'][pc.sku],
+        'term': offer_file['terms'][pc.terms][pc.sku],
+        'term_description': pc.terms
+    }
+
+
+def get_prices(pc):
+    products = find_products(pc)
+    prices = {}
+    for p in products:
+        offer_term = products[p]['term']
+        for ot in offer_term:
+            price_dim = offer_term[ot]['priceDimensions']
+            for pd in price_dim:
+                rc = price_dim[pd]
+                rate_code = rc['rateCode']
+                prices[rate_code] = {
+                    'regionId': pc.region,
+                    'unit': rc['unit'], 'pricePerUnit': rc['pricePerUnit'],
+                    'description': rc['description'],
+                    'sku': offer_term[ot]['sku'],
+                    'effectiveDate': offer_term[ot]['effectiveDate'],
+                    'term_description': pc.terms
+                }
+                if 'beginRange' in rc:
+                    prices[rate_code].update({
+                        'beginRange': rc['beginRange'],
+                        'endRange': rc['endRange'],
+                    })
+
+    if logging.INFO == logger.getEffectiveLevel():
+        logger.info("Prices: \n{0}".format(json.dumps(
+            prices, indent=2, sort_keys=True))
+        )
+    return prices
+
+
+def _match_terms_attribs(pc, offer_file, product, sku):
     logger.debug('Checking product terms: {0}'.format(pc.terms))
     try:
         terms = offer_file['terms'][pc.terms][sku]
@@ -188,24 +249,24 @@ def _check_terms_attribs(pc, offer_file, product, sku):
         logger.debug('Checking product attributes: {0}'.format(
             pc.attributes
         ))
-        if pc.attributes is None:
+        if len(pc.attributes) is 0:
             return {
-                    'offerCode': offer_file['offerCode'],
-                    'product': product,
-                    'term': terms
-                }
-
-        in_attribs = set(pc.attributes.items())
-        attrib_items = set(product['attributes'].items())
-        print("In: {0} Comp: {1}".format(in_attribs, attrib_items))
-        print("Intersection: {0}".format(in_attribs <= attrib_items))
-        if set(pc.attributes.items()) <= set(product['attributes'].items()):
-            # any intersection means at least one matching Key and Value
-            logger.debug('Attrib intersection found')
-            return {
+                'regionId': pc.region,
                 'offerCode': offer_file['offerCode'],
                 'product': product,
-                'term': terms
+                'term': terms,
+                'term_description': pc.terms
+            }
+
+        if set(pc.attributes.items()) <= set(product['attributes'].items()):
+            # every element in the filter attributes set is in the other set
+            # so True means all Key and Value pairs match
+            return {
+                'regionId': pc.region,
+                'offerCode': offer_file['offerCode'],
+                'product': product,
+                'term': terms,
+                'term_description': pc.terms
             }
     except KeyError:
         logger.debug("SKU {0} filtered vs. Terms: {1}".format(
