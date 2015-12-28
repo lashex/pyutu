@@ -13,7 +13,6 @@ setup(
     url='https://github.com/lashex/pyutu',
     license=open("LICENSE").read(),
     author='Brett Francis',
-    author_email='brett_francis@me.com',
     description='Python library for interaction with the AWS Pricing API',
     long_description=open("README.rst").read(),
     py_modules=['pyutu'],
@@ -21,7 +20,9 @@ setup(
     include_package_data=True,
     package_dir={'pyutu': 'pyutu'},
     install_requires=[
-        'click', 'CacheControl', 'requests'
+        'click>=6.2',
+        'CacheControl>=0.11.5',
+        'requests>=2.9.1'
     ],
     entry_points='''
         [console_scripts]
