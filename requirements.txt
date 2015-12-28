@@ -2,6 +2,5 @@ CacheControl==0.11.5
 click==6.2
 lockfile==0.12.2
 nose==1.3.7
--e git+https://github.com/lashex/pyutu.git@bcdf0d77f6c2727412430c80eacc24d579ca2741#egg=pyutu-master
 requests==2.9.1
 wsgiref==0.1.2
