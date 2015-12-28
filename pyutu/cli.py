@@ -114,3 +114,6 @@ def price(pc, service, attrib, sku):
 
 cli.add_command(index)
 cli.add_command(product)
+
+if __name__ == '__main__':
+    cli()

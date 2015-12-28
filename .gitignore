@@ -61,6 +61,8 @@ target/
 
 # Virtual Environment stuff
 venv
+venv2
+venv3
 
 # Miscellaneous stuff
 *.cache
