@@ -25,9 +25,16 @@ Installation
   pip install pyutu
 
 
-(early) CLI Examples
-~~~~~~~~~~~~~~~~~~~~
-A CLI example that shows the pricing index file.
+CLI Examples
+~~~~~~~~~~~~
+Activate `help`
+
+.. code-block:: bash
+
+  pyutu --help
+
+
+A CLI example that shows details from the pricing index file.
 
 .. code-block:: bash
 
@@ -39,7 +46,8 @@ A CLI example that shows the pricing index file.
     AmazonRedshift, awskms, AmazonCloudFront
   ...snip...
 
-A CLI example showing how to get EC2 Linux on-demand prices in the default region for the `m4.large` instance type.
+A CLI example showing how to get EC2 Linux on-demand prices in the default
+region for the `m4.large` instance type.
 
 .. code-block:: bash
 
@@ -186,7 +194,3 @@ A CLI example showing how to get all on-demand DDB prices in the default region.
       ...snip...
   Total Prices Found: 31
   Time: 0.417241 secs
-
-
-
-- [ ] Add ability to find specific product families' prices
