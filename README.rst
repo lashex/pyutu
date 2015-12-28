@@ -18,6 +18,13 @@ A Python-based CLI and library for cloud pricing APIs. Currently covering `AWS P
 
 Initially, this library just strives to simplify pulling product details and pricing terms from a Service's Offer File for a given Region.
 
+Installation
+~~~~~~~~~~~~
+
+.. code-block:: bash
+  pip install pyutu
+
+
 (early) CLI Examples
 ~~~~~~~~~~~~~~~~~~~~
 A CLI example that shows the pricing index file.
@@ -25,9 +32,11 @@ A CLI example that shows the pricing index file.
 .. code-block:: bash
 
   $> pyutu index
-  Publication Date: 2015-12-09T23:40:29Z
   Format Version: v1.0
-  Offers: {'AmazonVPC': {'offerCode': 'AmazonVPC', 'currentVersionUrl': '/offers/v1.0/aws/AmazonVPC/current/index.json'}, ...snip...
+  Publication Date: 2015-12-15T23:51:56Z
+  Services Offered: AmazonDynamoDB, AmazonVPC, AmazonSimpleDB, AmazonGlacier,
+    AmazonEC2, AmazonS3, AmazonSES, AmazonRoute53, AmazonElastiCache, AmazonRDS,
+    AmazonRedshift, awskms, AmazonCloudFront
   ...snip...
 
 A CLI example showing how to get EC2 Linux on-demand prices in the default region for the `m4.large` instance type.

@@ -78,6 +78,11 @@ svcs = {
 # }
 
 
+def camel_case(st):
+    output = ''.join(x for x in st.title() if x.isalpha())
+    return output[0].lower() + output[1:]
+
+
 class PricingContext(object):
 
     def __init__(self, region):
@@ -138,19 +143,6 @@ def check_service(service):
         raise ValueError('Invalid service: {0}'.format(service))
 
     return True
-
-
-def get_details(pc):
-    logger.info("Format Version: {0}".format(pc.idx['formatVersion']))
-    logger.info("Publication Date: {0}".format(pc.idx['publicationDate']))
-    olist = ''
-    for i,o in enumerate(pc.idx['offers']):
-        if i < len(pc.idx['offers']) - 1:
-            olist += o + ", "
-        else:
-            olist += o
-
-    logger.info("Offers: {0}".format(olist))
 
 
 def find_products(pc):

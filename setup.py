@@ -27,7 +27,7 @@ setup(
         [console_scripts]
         pyutu=pyutu.cli:cli
         ''',
-    test_suite='pyutu.suite',
+    test_suite='test_pyutu.suite',
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
