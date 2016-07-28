@@ -30,7 +30,8 @@ setup(
     install_requires=[
         'click>=6.2',
         'CacheControl>=0.11.5',
-        'requests>=2.9.1'
+        'requests>=2.9.1',
+        'lockfile>=0.12.2'
     ],
     entry_points='''
         [console_scripts]
