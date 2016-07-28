@@ -9,8 +9,7 @@ from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
 
 
-__version__ = open(os.path.join(os.path.dirname(__file__), '_version')).read()
-
+__version__ = '0.4.4'
 
 logging.basicConfig(stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
