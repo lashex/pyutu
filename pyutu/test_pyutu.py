@@ -12,6 +12,7 @@ class PyutuTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+
 class PyutuBadServiceTestCase(PyutuTest):
     @raises(ValueError)
     def test_bad_service(self):
@@ -19,7 +20,9 @@ class PyutuBadServiceTestCase(PyutuTest):
         pc.service = 'ddf'
         pyutu.get_prices(pc)
 
+
 class PyutuPricingContextTestCase(PyutuTest):
+
     def test_pc(self):
         pc = pyutu.PricingContext(region='us-west-2')
         pc.terms = 'ondemand'

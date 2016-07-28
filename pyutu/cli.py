@@ -1,7 +1,9 @@
-import click
-import pyutu
+from __future__ import print_function
+import sys
 import json
 import time
+import click
+import pyutu.client as pyutu
 
 pass_pc = click.make_pass_decorator(pyutu.PricingContext, ensure=True)
 
@@ -110,7 +112,8 @@ def price(pc, service, attrib, sku):
         )
 
     click.echo("Total Prices Found: {0}".format(len(prices)))
-    click.echo("Time: {0} secs".format(time.process_time()))
+    if sys.version_info >= (3, 3):
+        click.echo("Time: {0} secs".format(time.process_time()))
 
 cli.add_command(index)
 cli.add_command(product)
