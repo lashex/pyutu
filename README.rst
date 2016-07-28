@@ -15,7 +15,9 @@ A Python-based CLI and library for cloud pricing APIs. Currently covering `AWS P
 
   **pyutu** – when said fast, sounds like "pay you too" ... which seems appropriate.
 
-Initially, this library just strives to simplify pulling product details and pricing terms from a Service's Offer File for a given Region.
+Initially, this library just strives to simplify pulling product details and pricing
+terms from a Service's Offer File for a given Region. That being said, if you
+have some ideas feel free to open an Issue labeled as an `enhancement`.
 
 Installation
 ~~~~~~~~~~~~
@@ -27,7 +29,7 @@ Installation
 
 CLI Examples
 ~~~~~~~~~~~~
-Activate `help`
+Activate ``help``
 
 .. code-block:: bash
 
@@ -47,7 +49,7 @@ A CLI example that shows details from the pricing index file.
   ...snip...
 
 A CLI example showing how to get EC2 Linux on-demand prices in the default
-region for the `m4.large` instance type.
+region for the ``m4.large`` instance type.
 
 .. code-block:: bash
 
@@ -100,7 +102,7 @@ region for the `m4.large` instance type.
   Time: 5.768927000000001 secs
 
 
-A CLI example showing how to get EC2 Linux product details in the default region for the shared tenancy `m4.large` instance type
+A CLI example showing how to get EC2 Linux product details in the default region for the shared tenancy ``m4.large`` instance type
 
 .. code-block:: bash
 
