@@ -1,6 +1,7 @@
 # Copyright (c) 2016 Brett Francis http://www.oort.org
 #
 
+import os
 import sys
 import logging
 import requests
@@ -8,13 +9,17 @@ import json
 from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
 
+cache_dir = '/tmp'
 
 logging.basicConfig(stream=sys.stdout,
                     format="%(asctime)s: " + logging.BASIC_FORMAT,
                     datefmt="%Y-%m-%dT%H:%M:%S%z")
 logger = logging.getLogger(__name__)
 
-req = CacheControl(requests.Session(), cache=FileCache('pyutu.cache'))
+req = CacheControl(
+    requests.Session(),
+    cache=FileCache(os.path.join(cache_dir, 'pyutu.cache'))
+)
 
 regions = {
     'ap-northeast-1': "Asia Pacific (Tokyo)",
