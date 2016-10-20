@@ -94,6 +94,7 @@ class PricingContext(object):
         self._service_url = None
         self._terms = None
         self.attributes = {}
+        self.product_family = None
 
     @property
     def terms(self):
@@ -153,13 +154,15 @@ def find_products(pc):
     offer_file = req.get(pc.service_url).json()
 
     products = {}
+    product_familes = pc.product_family if  pc.product_family else svcs[pc.service]['prod_families']
+
     if pc.sku is None:
         # find service's product in a region that matches
         # the terms and attributes
         for p in offer_file['products']:
             product = offer_file['products'][p]
             prod_fam = product['productFamily']
-            if prod_fam in svcs[pc.service]['prod_families']:
+            if prod_fam in  product_familes:
                 # Cannot simply use 'region' as an attribute because we need to
                 # pick the right regional 'from attribute' by product family
                 # AND service

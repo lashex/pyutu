@@ -51,19 +51,21 @@ def index(pc):
 
 @cli.command()
 @click.argument('service', type=click.Choice(services))
+@click.option('--product_family', default=None)
 @click.option('--attrib', '-a', nargs=2, multiple=True,
               type=click.Tuple([str, str]),
               help='One or more attributes to use as a product filter.')
 @click.option('--sku', default=None,
               help='Get the SKU of a product within the given <SERVICE>')
 @pass_pc
-def product(pc, service, attrib, sku):
+def product(pc, service, product_family, attrib, sku):
     """
     Get a list of a service's products.
     The list will be in the given region, matching the specific terms and
     any given attribute filters or a SKU.
     """
     pc.service = service.lower()
+    pc.product_family = product_family
     pc.sku = sku
     pc.add_attributes(attribs=attrib)
     click.echo("Service Alias: {0}".format(pc.service_alias))
@@ -84,19 +86,21 @@ def product(pc, service, attrib, sku):
 
 @cli.command()
 @click.argument('service', type=click.Choice(services))
+@click.option('--product_family', default=None)
 @click.option('--attrib', '-a', nargs=2, multiple=True,
               type=click.Tuple([str, str]),
               help='An attribute to use as a product filter.')
 @click.option('--sku', default=None,
               help='Price the SKU of a product within the given <SERVICE>')
 @pass_pc
-def price(pc, service, attrib, sku):
+def price(pc, service, product_family, attrib, sku):
     """
     Get a list of a service's prices.
     The list will be in the given region, matching the specific terms and
     any given attribute filters or a SKU.
     """
     pc.service = service.lower()
+    pc.product_family = product_family
     pc.sku = sku
     pc.add_attributes(attribs=attrib)
     click.echo("Service Alias: {0}".format(pc.service_alias))
