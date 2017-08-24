@@ -8,19 +8,20 @@ from setuptools import setup
 from pyutu import __version__
 
 
-def open_file(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname))
+def read_file(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
+        return f.read()
 
 
 setup(
     name='pyutu',
     version=__version__,
     url='https://github.com/lashex/pyutu',
-    license=open('LICENSE').read(),
+    license=read_file('LICENSE'),
     author='Brett Francis',
     author_email='brett_francis@me.com',
     description='Python library for interaction with the AWS Pricing API',
-    long_description=open_file('README.rst').read(),
+    long_description=read_file('README.rst'),
     py_modules=['pyutu'],
     zip_safe=False,
     include_package_data=True,
