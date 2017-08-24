@@ -24,7 +24,6 @@ setup(
     py_modules=['pyutu'],
     zip_safe=False,
     include_package_data=True,
-    package_data={'pyutu': ['_version']},
     packages=["pyutu"],
     # package_dir={'pyutu': 'pyutu'},
     install_requires=[
