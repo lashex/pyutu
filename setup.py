@@ -5,7 +5,6 @@ pyutu
 """
 import os
 from setuptools import setup
-from pyutu import __version__
 
 
 def read_file(fname):
@@ -13,9 +12,21 @@ def read_file(fname):
         return f.read()
 
 
+def parse_version():
+    """Extract the version without importing the client
+
+    The client imports third party libraries that aren't guaranteed to be
+    available at install time.
+    """
+    for line in read_file('pyutu/__init__.py').splitlines():
+        if line.startswith('__version__'):
+            version = line.split("'")[1]
+            return version
+
+
 setup(
     name='pyutu',
-    version=__version__,
+    version=parse_version(),
     url='https://github.com/lashex/pyutu',
     license=read_file('LICENSE'),
     author='Brett Francis',
