@@ -158,7 +158,7 @@ def find_products(pc):
         # the terms and attributes
         for p in offer_file['products']:
             product = offer_file['products'][p]
-            prod_fam = product['productFamily']
+            prod_fam = product.get('productFamily')
             if prod_fam in svcs[pc.service]['prod_families']:
                 # Cannot simply use 'region' as an attribute because we need to
                 # pick the right regional 'from attribute' by product family
