@@ -5,32 +5,44 @@ pyutu
 """
 import os
 from setuptools import setup
-from pyutu import __version__
 
 
-def open_file(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname))
+def read_file(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
+        return f.read()
+
+
+def parse_version():
+    """Extract the version without importing the client
+
+    The client imports third party libraries that aren't guaranteed to be
+    available at install time.
+    """
+    for line in read_file('pyutu/__init__.py').splitlines():
+        if line.startswith('__version__'):
+            version = line.split("'")[1]
+            return version
 
 
 setup(
     name='pyutu',
-    version=__version__,
+    version=parse_version(),
     url='https://github.com/lashex/pyutu',
-    license=open("LICENSE").read(),
+    license=read_file('LICENSE'),
     author='Brett Francis',
     author_email='brett_francis@me.com',
     description='Python library for interaction with the AWS Pricing API',
-    long_description=open_file("README.rst").read(),
+    long_description=read_file('README.rst'),
     py_modules=['pyutu'],
     zip_safe=False,
     include_package_data=True,
-    package_data={'pyutu': ['_version']},
-    packages=["pyutu"],
+    packages=['pyutu'],
     # package_dir={'pyutu': 'pyutu'},
     install_requires=[
         'click>=6.2',
         'CacheControl>=0.11.5',
-        'requests>=2.9.1'
+        'requests>=2.9.1',
+        'lockfile>=0.12.2'
     ],
     entry_points='''
         [console_scripts]
